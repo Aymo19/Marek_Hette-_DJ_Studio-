@@ -143,7 +143,15 @@
         }
 
         .dj-controls-panel { left: 30px; gap: 20px; }
-        .performance-panel { right: 30px; flex-direction: column; gap: 12px; width: 140px; align-items: stretch; justify-content: center; }
+        
+        .performance-panel { 
+            right: 30px; 
+            flex-direction: column; 
+            gap: 15px; 
+            width: 175px; 
+            align-items: stretch; 
+            justify-content: center; 
+        }
 
         .fader-container {
             display: flex;
@@ -173,7 +181,6 @@
             background: transparent;
         }
 
-        /* --- STYL SLIDEROV (Presne podľa tvojho zadania) --- */
         input[type="range"].vertical-fader::-webkit-slider-thumb {
             appearance: none;
             width: 42px;
@@ -213,30 +220,30 @@
             background: rgba(27, 27, 51, 0.8);
             border: 1px solid rgba(191, 0, 255, 0.4);
             color: white;
-            padding: 10px;
-            border-radius: 10px;
+            padding: 13px;
+            border-radius: 12px;
             cursor: pointer;
             font-weight: bold;
-            font-size: 11px;
+            font-size: 14px;
             text-transform: uppercase;
             transition: 0.2s;
-            letter-spacing: 1px;
+            letter-spacing: 1.25px;
         }
 
         .panel-btn:hover { background: #bf00ff; border-color: white; }
 
-        /* LOOP SWITCH ŠTÝL */
         .switch-wrap {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 4px;
+            gap: 6px;
         }
+
         .switch {
             position: relative;
             display: inline-block;
-            width: 44px;
-            height: 22px;
+            width: 55px;
+            height: 28px;
         }
         .switch input { opacity: 0; width: 0; height: 0; }
         .flip {
@@ -245,20 +252,20 @@
             top: 0; left: 0; right: 0; bottom: 0;
             background-color: #1b1b33;
             transition: .4s;
-            border-radius: 22px;
+            border-radius: 28px;
             border: 1px solid rgba(191, 0, 255, 0.4);
         }
         .flip:before {
             position: absolute;
             content: "";
-            height: 14px; width: 14px;
-            left: 4px; bottom: 3px;
+            height: 18px; width: 18px;
+            left: 5px; bottom: 4px;
             background-color: white;
             transition: .4s;
             border-radius: 50%;
         }
         input:checked + .flip { background-color: #bf00ff; }
-        input:checked + .flip:before { transform: translateX(20px); }
+        input:checked + .flip:before { transform: translateX(26px); }
 
         .back-btn {
             position: fixed;
@@ -355,7 +362,6 @@
 
 <div class="dj-panel performance-panel">
     <span class="fader-label" style="text-align:center; margin-bottom: 5px;">FX Master</span>
-    <button id="cueBtn" class="panel-btn">⏮ CUE (Reset Time)</button>
     
     <div class="switch-wrap">
         <span class="fader-label">Loop</span>
@@ -364,6 +370,8 @@
             <span class="flip"></span>
         </label>
     </div>
+
+    <button id="cueBtn" class="panel-btn">⏮ CUE (Reset Time)</button>
 
     <button id="resetFxBtn" class="panel-btn" style="color: #ff00ff; border-color: #ff00ff; margin-top: 10px;">Reset All FX</button>
 </div>
@@ -419,6 +427,15 @@ const dataArray = new Uint8Array(bufferLength);
 let source;
 let isPlaying = false;
 let isDraggingSeek = false;
+let fileLoaded = false; // PRIDANÉ: sledovanie či je súbor načítaný
+
+function checkFile() {
+    if (!fileLoaded) {
+        alert("Najprv musíš vybrať hudobný súbor! 📁");
+        return false;
+    }
+    return true;
+}
 
 function makeDistortionCurve(amount) {
     let k = amount, n_samples = 44100, curve = new Float32Array(n_samples);
@@ -440,6 +457,7 @@ window.addEventListener('load', () => {
 });
 
 filterSlider.addEventListener("input", (e) => {
+    if (!checkFile()) { e.target.value = 0; return; }
     const val = parseFloat(e.target.value);
     if (val > 0.05) { 
         filterNode.type = "highpass"; filterNode.frequency.value = val * 5000; filterLabel.textContent = "HPF"; 
@@ -451,34 +469,57 @@ filterSlider.addEventListener("input", (e) => {
 });
 
 panSlider.addEventListener("input", (e) => {
+    if (!checkFile()) { e.target.value = 0; return; }
     const val = parseFloat(e.target.value);
     panNode.pan.value = val;
     panLabel.textContent = val > 0.1 ? "RIGHT" : val < -0.1 ? "LEFT" : "MID";
 });
 
 driveSlider.addEventListener("input", (e) => {
+    if (!checkFile()) { e.target.value = 0; return; }
     const val = parseInt(e.target.value);
     driveNode.curve = val > 0 ? makeDistortionCurve(val) : null;
     driveLabel.textContent = val;
 });
 
 reverbSlider.addEventListener("input", (e) => {
+    if (!checkFile()) { e.target.value = 0; return; }
     const val = parseFloat(e.target.value);
     wetNode.gain.value = val;
     dryNode.gain.value = 1 - val;
     reverbLabel.textContent = Math.round(val * 100) + "%";
 });
 
-volumeSlider.addEventListener("input", (e) => { audio.volume = e.target.value; volPercent.textContent = Math.round(e.target.value * 100) + "%"; });
-pitchSlider.addEventListener("input", (e) => { audio.playbackRate = e.target.value; pitchValue.textContent = parseFloat(e.target.value).toFixed(2) + "x"; });
+volumeSlider.addEventListener("input", (e) => { 
+    if (!checkFile()) { e.target.value = 0.5; return; }
+    audio.volume = e.target.value; volPercent.textContent = Math.round(e.target.value * 100) + "%"; 
+});
 
-cueBtn.addEventListener("click", () => { audio.currentTime = 0; });
+pitchSlider.addEventListener("input", (e) => { 
+    if (!checkFile()) { e.target.value = 1.0; return; }
+    audio.playbackRate = e.target.value; pitchValue.textContent = parseFloat(e.target.value).toFixed(2) + "x"; 
+});
+
+cueBtn.addEventListener("click", () => { 
+    if (checkFile()) audio.currentTime = 0; 
+});
 
 loopToggle.addEventListener("change", () => {
+    if (!checkFile()) { loopToggle.checked = false; return; }
     audio.loop = loopToggle.checked;
 });
 
+audio.addEventListener("ended", () => {
+    if (!audio.loop) {
+        isPlaying = false;
+        btnText.textContent = "Štart";
+        toggleBtn.querySelector(".icon").textContent = "▶";
+    }
+});
+
 resetFxBtn.addEventListener("click", () => {
+    if (!checkFile()) return;
+    volumeSlider.value = 0.5; volumeSlider.dispatchEvent(new Event('input'));
     filterSlider.value = 0; filterSlider.dispatchEvent(new Event('input'));
     reverbSlider.value = 0; reverbSlider.dispatchEvent(new Event('input'));
     driveSlider.value = 0; driveSlider.dispatchEvent(new Event('input'));
@@ -489,6 +530,7 @@ resetFxBtn.addEventListener("click", () => {
 
 fileInput.addEventListener("change", function () {
     const file = this.files[0]; if (!file) return;
+    fileLoaded = true; // OZNAČÍME, ŽE SÚBOR JE TU
     document.getElementById("fileName").textContent = file.name;
     audio.src = URL.createObjectURL(file);
     audio.load();
@@ -506,6 +548,7 @@ fileInput.addEventListener("change", function () {
 });
 
 toggleBtn.addEventListener("click", async () => {
+    if (!checkFile()) return;
     if (audioCtx.state === 'suspended') await audioCtx.resume();
     
     const iconEl = toggleBtn.querySelector(".icon");
@@ -527,8 +570,17 @@ toggleBtn.addEventListener("click", async () => {
 function formatTime(s) { if(isNaN(s)) return "0:00"; let m=Math.floor(s/60), r=Math.floor(s%60); return m+":"+(r<10?"0":"")+r; }
 audio.addEventListener("loadedmetadata", () => { seekBar.max = Math.floor(audio.duration); durationTimeEl.textContent = formatTime(audio.duration); });
 audio.addEventListener("timeupdate", () => { if (!isDraggingSeek) { seekBar.value = Math.floor(audio.currentTime); currentTimeEl.textContent = formatTime(audio.currentTime); } });
-seekBar.addEventListener("input", () => { isDraggingSeek = true; currentTimeEl.textContent = formatTime(seekBar.value); });
-seekBar.addEventListener("change", () => { audio.currentTime = seekBar.value; isDraggingSeek = false; });
+
+seekBar.addEventListener("input", () => { 
+    if (!checkFile()) { seekBar.value = 0; return; }
+    isDraggingSeek = true; 
+    currentTimeEl.textContent = formatTime(seekBar.value); 
+});
+
+seekBar.addEventListener("change", () => { 
+    if (checkFile()) { audio.currentTime = seekBar.value; }
+    isDraggingSeek = false; 
+});
 
 function draw() {
     requestAnimationFrame(draw);
