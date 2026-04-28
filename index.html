@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Audio Vizualizér</title>
+    <title>DJ Studio</title>
     <link rel="icon" href="thumbnail.png" type="image/png">
 
     <style>
@@ -11,194 +11,279 @@
             margin: 0;
             background: radial-gradient(circle at top, #141428, #05050a);
             color: white;
-            font-family: "Courier New", monospace;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
             min-height: 100vh;
+            overflow-x: hidden;
         }
 
         h1 {
             margin-top: 20px;
-            margin-bottom: 50px;
-            font-size: 34px;
-            font-weight: 700;
-            letter-spacing: 1px;
-            text-shadow: 0 0 15px rgba(76, 111, 255, 0.5);
+            margin-bottom: 15px;
+            font-size: 50px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            background: linear-gradient(90deg, #bf00ff, #ff00ff, #bf00ff);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 10px rgba(191, 0, 255, 0.7));
+            animation: shine 4s linear infinite;
         }
 
+        @keyframes shine { to { background-position: 200% center; } }
+
         .controls {
-            margin-top: 10px;
+            margin-top: 5px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 22px;
+            gap: 15px;
         }
 
-        input[type="file"] {
-            display: none;
-        }
+        input[type="file"] { display: none; }
 
         .file-btn {
             display: flex;
             align-items: center;
             gap: 10px;
-            padding: 10px 16px;
+            padding: 10px 18px;
             border-radius: 14px;
-            background: #1b1b33;
-            box-shadow: 0 0 12px rgba(76, 111, 255, 0.2);
+            background: rgba(27, 27, 51, 0.8);
+            box-shadow: 0 0 15px rgba(191, 0, 255, 0.2);
             cursor: pointer;
-            transition: 0.25s;
+            transition: 0.3s;
             min-width: 200px;
             justify-content: center;
-        }
-
-        .file-btn:hover {
-            background: #4c6fff;
-            transform: scale(1.05);
-        }
-
-        canvas {
-            margin-top: 30px;
-            border-radius: 12px;
-            background: black;
-            box-shadow: 0 0 40px rgba(76, 111, 255, 0.35);
-        }
-
-        .player-controls {
-            display: flex;
-            align-items: center;
-            gap: 40px;
-            margin-top: 45px;
-        }
-
-        /* 🎛️ KNOB */
-        .knob-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 6px;
-            position: relative;
-        }
-
-        .knob-labels {
-            width: 100px;
-            display: flex;
-            justify-content: space-between;
-            font-size: 14px;
-            color: #aaa;
-            position: absolute;
-            top: -30px;
-        }
-
-        .knob {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            background: radial-gradient(circle, #2a2a4a, #121224);
-            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.8), 0 0 15px rgba(76, 111, 255, 0.4);
-            position: relative;
-            cursor: grab;
-            transform-origin: center;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .knob::after {
-            content: "";
-            position: absolute;
-            width: 6px;
-            height: 25px;
-            background: #4c6fff;
-            top: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            border-radius: 3px;
-        }
-
-        button {
-            width: 220px;
-            height: 70px;
-            border-radius: 35px;
-            border: none;
-            cursor: pointer;
-            background: #1b1b33;
-            color: white;
-            font-size: 26px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 14px;
-            transition: 0.25s;
-            box-shadow: 0 0 18px rgba(76, 111, 255, 0.35);
-        }
-
-        button .icon {
-            font-size: 30px;
-        }
-
-        button:hover {
-            background: #4c6fff;
-            transform: scale(1.05);
-        }
-
-        .back-btn {
-            position: fixed;
-            top: 12px;
-            left: 12px;
-            padding: 14px 18px;
-            border-radius: 14px;
-            background: #1b1b33;
-            color: white;
-            text-decoration: none;
-            font-size: 16px;
-            font-weight: 600;
-            box-shadow: 0 0 12px rgba(76, 111, 255, 0.3);
-        }
-
-        .back-btn:hover {
-            background: #4c6fff;
-        }
-
-        /* UPDATED INFO BOX in LEFT BOTTOM CORNER, MOVED LOWER */
-        .info-box {
-            position: fixed;
-            left: 20px;
-            bottom: 50px; /* Changed this value to move box down */
-            background-color: #1b1b33;
-            color: white;
-            padding: 25px 20px;
-            border-radius: 20px;
-            box-shadow: 0 0 12px rgba(76, 111, 255, 0.3);
-            width: 250px;
-            text-align: center;
-            font-size: 16px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .info-box h4 {
-            margin: 0 0 10px;
-            font-size: 18px;
+            border: 1px solid rgba(191, 0, 255, 0.3);
             font-weight: bold;
         }
 
-        .info-box p {
-            margin: 0;
+        .file-btn:hover {
+            background: #bf00ff;
+            box-shadow: 0 0 25px rgba(191, 0, 255, 0.5);
+            transform: translateY(-2px);
         }
 
-    </style>
+        canvas {
+            margin-top: 20px;
+            border-radius: 15px;
+            background: #000;
+            box-shadow: 0 0 40px rgba(191, 0, 255, 0.25);
+            display: block;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
 
+        .seek-container {
+            width: 900px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        #seekBar {
+            flex-grow: 1;
+            cursor: pointer;
+            accent-color: #bf00ff;
+            height: 6px;
+        }
+
+        .time-display {
+            font-size: 14px;
+            color: #bf00ff;
+            font-family: monospace;
+            min-width: 50px;
+        }
+
+        .btn-container {
+            margin-top: 25px;
+            display: flex;
+            justify-content: center;
+            width: 100%;
+        }
+
+        #toggleBtn {
+            width: 180px;
+            height: 55px;
+            border-radius: 50px;
+            border: none;
+            cursor: pointer;
+            background: linear-gradient(135deg, #1b1b33 0%, #3d1b4d 100%);
+            color: white;
+            font-size: 20px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: 0.3s;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(191, 0, 255, 0.4);
+        }
+
+        #toggleBtn:hover {
+            background: #bf00ff;
+            transform: scale(1.05);
+        }
+
+        .dj-panel {
+            position: fixed;
+            bottom: 20px;
+            background: rgba(15, 15, 30, 0.9);
+            padding: 20px 25px;
+            border-radius: 25px;
+            border: 1px solid rgba(191, 0, 255, 0.3);
+            display: flex;
+            backdrop-filter: blur(15px);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+        }
+
+        .dj-controls-panel { left: 30px; gap: 20px; }
+        .performance-panel { right: 30px; flex-direction: column; gap: 12px; width: 140px; align-items: stretch; justify-content: center; }
+
+        .fader-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .fader-wrapper {
+            position: relative;
+            width: 35px;
+            height: 160px;
+            background: #05050a;
+            border-radius: 8px;
+            border: 2px solid #2a1033;
+            display: flex;
+            justify-content: center;
+            padding: 8px 0;
+        }
+
+        input[type="range"].vertical-fader {
+            writing-mode: bt-lr;
+            appearance: slider-vertical;
+            width: 35px;
+            height: 100%;
+            cursor: pointer;
+            background: transparent;
+        }
+
+        /* --- STYL SLIDEROV (Presne podľa tvojho zadania) --- */
+        input[type="range"].vertical-fader::-webkit-slider-thumb {
+            appearance: none;
+            width: 42px;
+            height: 20px;
+            background: #bf00ff;
+            border: 2px solid #fff;
+            border-radius: 4px;
+            box-shadow: 0 0 15px rgba(191, 0, 255, 0.8);
+        }
+
+        input[type="range"].vertical-fader::-moz-range-thumb {
+            width: 42px;
+            height: 20px;
+            background: #bf00ff;
+            border: 2px solid #fff;
+            border-radius: 4px;
+            box-shadow: 0 0 15px rgba(191, 0, 255, 0.8);
+        }
+
+        .fader-label {
+            font-size: 9px;
+            color: #bf00ff;
+            font-weight: 900;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .fader-value {
+            font-size: 12px;
+            color: #fff;
+            font-weight: bold;
+            min-width: 45px;
+            text-align: center;
+        }
+
+        .panel-btn {
+            background: rgba(27, 27, 51, 0.8);
+            border: 1px solid rgba(191, 0, 255, 0.4);
+            color: white;
+            padding: 10px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 11px;
+            text-transform: uppercase;
+            transition: 0.2s;
+            letter-spacing: 1px;
+        }
+
+        .panel-btn:hover { background: #bf00ff; border-color: white; }
+
+        /* LOOP SWITCH ŠTÝL */
+        .switch-wrap {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 22px;
+        }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .flip {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #1b1b33;
+            transition: .4s;
+            border-radius: 22px;
+            border: 1px solid rgba(191, 0, 255, 0.4);
+        }
+        .flip:before {
+            position: absolute;
+            content: "";
+            height: 14px; width: 14px;
+            left: 4px; bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .flip { background-color: #bf00ff; }
+        input:checked + .flip:before { transform: translateX(20px); }
+
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            padding: 12px 20px;
+            border-radius: 12px;
+            background: rgba(27, 27, 51, 0.9);
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: bold;
+            z-index: 10;
+            transition: 0.3s;
+            border: 1px solid rgba(191, 0, 255, 0.2);
+        }
+
+        .back-btn:hover { background: #bf00ff; }
+    </style>
 </head>
 <body>
 
 <a href="/" class="back-btn">⟵ Späť na portál</a>
 
-<h1>Audio Vizualizér</h1>
+<h1>DJ Studio</h1>
 
 <div class="controls">
     <label class="file-btn">
@@ -208,27 +293,79 @@
     </label>
 </div>
 
-<canvas id="canvas" width="900" height="400"></canvas>
+<canvas id="canvas" width="900" height="280"></canvas>
 
-<div class="player-controls">
-    <div class="knob-container">
-        <div class="knob-labels">
-            <span>MAX</span>
-            <span>MIN</span>
-        </div>
-        <div class="knob" id="knob"></div>
-    </div>
+<div class="seek-container">
+    <span id="currentTime" class="time-display">0:00</span>
+    <input type="range" id="seekBar" value="0" step="1">
+    <span id="durationTime" class="time-display">0:00</span>
+</div>
 
+<div class="btn-container">
     <button id="toggleBtn">
         <span class="icon">▶</span>
         <span id="btnText">Štart</span>
     </button>
 </div>
 
-<!-- UPDATED INFO BOX DIV -->
-<div class="info-box">
-    <h4>Informácie o prehrávači</h4>
-    <p>Prehrávajte zvuk a ovládajte hlasitosť otočným ovládačom. Použite ovládanie pre spustenie a pauzu.</p>
+<div class="dj-panel dj-controls-panel">
+    <div class="fader-container">
+        <span class="fader-label">VOL</span>
+        <div class="fader-wrapper">
+            <input type="range" id="volumeSlider" class="vertical-fader" min="0" max="1" step="0.01" value="0.5" orient="vertical">
+        </div>
+        <span id="volPercent" class="fader-value">50%</span>
+    </div>
+    <div class="fader-container">
+        <span class="fader-label">FILTER</span>
+        <div class="fader-wrapper">
+            <input type="range" id="filterSlider" class="vertical-fader" min="-1" max="1" step="0.01" value="0" orient="vertical">
+        </div>
+        <span id="filterLabel" class="fader-value">OFF</span>
+    </div>
+    <div class="fader-container">
+        <span class="fader-label">PITCH</span>
+        <div class="fader-wrapper">
+            <input type="range" id="pitchSlider" class="vertical-fader" min="0.25" max="5.0" step="0.01" value="1.0" orient="vertical">
+        </div>
+        <span id="pitchValue" class="fader-value">1.00x</span>
+    </div>
+    <div class="fader-container">
+        <span class="fader-label">PAN</span>
+        <div class="fader-wrapper">
+            <input type="range" id="panSlider" class="vertical-fader" min="-1" max="1" step="0.01" value="0" orient="vertical">
+        </div>
+        <span id="panLabel" class="fader-value">MID</span>
+    </div>
+    <div class="fader-container">
+        <span class="fader-label">VERB</span>
+        <div class="fader-wrapper">
+            <input type="range" id="reverbSlider" class="vertical-fader" min="0" max="1" step="0.01" value="0" orient="vertical">
+        </div>
+        <span id="reverbLabel" class="fader-value">0%</span>
+    </div>
+    <div class="fader-container">
+        <span class="fader-label">DRIVE</span>
+        <div class="fader-wrapper">
+            <input type="range" id="driveSlider" class="vertical-fader" min="0" max="50" step="1" value="0" orient="vertical">
+        </div>
+        <span id="driveLabel" class="fader-value">0</span>
+    </div>
+</div>
+
+<div class="dj-panel performance-panel">
+    <span class="fader-label" style="text-align:center; margin-bottom: 5px;">FX Master</span>
+    <button id="cueBtn" class="panel-btn">⏮ CUE (Reset Time)</button>
+    
+    <div class="switch-wrap">
+        <span class="fader-label">Loop</span>
+        <label class="switch">
+            <input type="checkbox" id="loopToggle">
+            <span class="flip"></span>
+        </label>
+    </div>
+
+    <button id="resetFxBtn" class="panel-btn" style="color: #ff00ff; border-color: #ff00ff; margin-top: 10px;">Reset All FX</button>
 </div>
 
 <audio id="audio"></audio>
@@ -236,136 +373,176 @@
 <script>
 const audio = document.getElementById("audio");
 const fileInput = document.getElementById("audioFile");
-const fileName = document.getElementById("fileName");
-
 const toggleBtn = document.getElementById("toggleBtn");
 const btnText = document.getElementById("btnText");
+const cueBtn = document.getElementById("cueBtn");
+const loopToggle = document.getElementById("loopToggle");
+const resetFxBtn = document.getElementById("resetFxBtn");
 
-const knob = document.getElementById("knob");
-
+const volumeSlider = document.getElementById("volumeSlider");
+const volPercent = document.getElementById("volPercent");
+const pitchSlider = document.getElementById("pitchSlider");
+const pitchValue = document.getElementById("pitchValue");
+const filterSlider = document.getElementById("filterSlider");
+const filterLabel = document.getElementById("filterLabel");
+const panSlider = document.getElementById("panSlider");
+const panLabel = document.getElementById("panLabel");
+const reverbSlider = document.getElementById("reverbSlider");
+const reverbLabel = document.getElementById("reverbLabel");
+const driveSlider = document.getElementById("driveSlider");
+const driveLabel = document.getElementById("driveLabel");
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
+const seekBar = document.getElementById("seekBar");
+const currentTimeEl = document.getElementById("currentTime");
+const durationTimeEl = document.getElementById("durationTime");
 
 const AudioContext = window.AudioContext || window.webkitAudioContext;
 const audioCtx = new AudioContext();
 const analyser = audioCtx.createAnalyser();
+const filterNode = audioCtx.createBiquadFilter();
+const panNode = audioCtx.createStereoPanner();
+const driveNode = audioCtx.createWaveShaper();
+const dryNode = audioCtx.createGain();
+const wetNode = audioCtx.createGain();
+
+filterNode.type = "allpass";
+panNode.pan.value = 0;
+dryNode.gain.value = 1.0;
+wetNode.gain.value = 0.0;
+driveNode.curve = null;
 
 analyser.fftSize = 256;
-
 const bufferLength = analyser.frequencyBinCount;
 const dataArray = new Uint8Array(bufferLength);
 
 let source;
 let isPlaying = false;
+let isDraggingSeek = false;
 
-/* 🎛️ KNOB LOGIC */
-let isDragging = false;
-
-let volume = 0.5; // Predvolená hlasitosť
-let angle = 180; // Počiatočný uhol na 45° (MIN)
-
-knob.style.transform = `rotate(${angle}deg)`;
-audio.volume = volume;
-
-knob.addEventListener("mousedown", () => isDragging = true);
-document.addEventListener("mouseup", () => isDragging = false);
-
-document.addEventListener("mousemove", (e) => {
-    if (!isDragging) return;
-
-    const rect = knob.getBoundingClientRect();
-    const cx = rect.left + rect.width / 2;
-    const cy = rect.top + rect.height / 2;
-
-    const dx = e.clientX - cx;
-    const dy = e.clientY - cy;
-
-    let theta = Math.atan2(dy, dx) * (180 / Math.PI) + 90;
-    if (theta < 0) theta += 360;
-
-    let newVolume = null;
-
-    // Left side: MIN (45°) to MID (0.5)
-    if (theta >= 45 && theta <= 135) {
-        let diff = theta - 45;
-        newVolume = diff / 270 * 0.5;
+function makeDistortionCurve(amount) {
+    let k = amount, n_samples = 44100, curve = new Float32Array(n_samples);
+    for (let i = 0; i < n_samples; ++i ) {
+        let x = i * 2 / n_samples - 1;
+        curve[i] = (3 + k) * x * 20 * (Math.PI / 180) / (Math.PI + k * Math.abs(x));
     }
+    return curve;
+}
 
-    // Right side: MID (0.5) to MAX (315°)
-    if (theta > 135 && theta <= 315) {
-        let diff = theta - 135;
-        newVolume = 0.5 + (diff / 180) * 0.5;
-    }
+window.addEventListener('load', () => {
+    volumeSlider.value = 0.5; audio.volume = 0.5; volPercent.textContent = "50%";
+    pitchSlider.value = 1.0; audio.playbackRate = 1.0; pitchValue.textContent = "1.00x";
+    filterSlider.value = 0; filterLabel.textContent = "OFF";
+    panSlider.value = 0; panLabel.textContent = "MID";
+    reverbSlider.value = 0; reverbLabel.textContent = "0%";
+    driveSlider.value = 0; driveLabel.textContent = "0";
+    seekBar.value = 0; currentTimeEl.textContent = "0:00";
+});
 
-    if (newVolume !== null) {
-        volume = Math.max(0, Math.min(1, newVolume));
-        angle = theta;
-
-        knob.style.transform = `rotate(${angle}deg)`;
-        audio.volume = volume;
+filterSlider.addEventListener("input", (e) => {
+    const val = parseFloat(e.target.value);
+    if (val > 0.05) { 
+        filterNode.type = "highpass"; filterNode.frequency.value = val * 5000; filterLabel.textContent = "HPF"; 
+    } else if (val < -0.05) { 
+        filterNode.type = "lowpass"; filterNode.frequency.value = 20000 + (val * 19800); filterLabel.textContent = "LPF"; 
+    } else { 
+        filterNode.type = "allpass"; filterLabel.textContent = "OFF"; 
     }
 });
 
+panSlider.addEventListener("input", (e) => {
+    const val = parseFloat(e.target.value);
+    panNode.pan.value = val;
+    panLabel.textContent = val > 0.1 ? "RIGHT" : val < -0.1 ? "LEFT" : "MID";
+});
+
+driveSlider.addEventListener("input", (e) => {
+    const val = parseInt(e.target.value);
+    driveNode.curve = val > 0 ? makeDistortionCurve(val) : null;
+    driveLabel.textContent = val;
+});
+
+reverbSlider.addEventListener("input", (e) => {
+    const val = parseFloat(e.target.value);
+    wetNode.gain.value = val;
+    dryNode.gain.value = 1 - val;
+    reverbLabel.textContent = Math.round(val * 100) + "%";
+});
+
+volumeSlider.addEventListener("input", (e) => { audio.volume = e.target.value; volPercent.textContent = Math.round(e.target.value * 100) + "%"; });
+pitchSlider.addEventListener("input", (e) => { audio.playbackRate = e.target.value; pitchValue.textContent = parseFloat(e.target.value).toFixed(2) + "x"; });
+
+cueBtn.addEventListener("click", () => { audio.currentTime = 0; });
+
+loopToggle.addEventListener("change", () => {
+    audio.loop = loopToggle.checked;
+});
+
+resetFxBtn.addEventListener("click", () => {
+    filterSlider.value = 0; filterSlider.dispatchEvent(new Event('input'));
+    reverbSlider.value = 0; reverbSlider.dispatchEvent(new Event('input'));
+    driveSlider.value = 0; driveSlider.dispatchEvent(new Event('input'));
+    panSlider.value = 0; panSlider.dispatchEvent(new Event('input'));
+    pitchSlider.value = 1.0; pitchSlider.dispatchEvent(new Event('input'));
+    loopToggle.checked = false; audio.loop = false;
+});
+
 fileInput.addEventListener("change", function () {
-    const file = this.files[0];
-    if (!file) return;
-
-    fileName.textContent = file.name;
-
-    const url = URL.createObjectURL(file);
-    audio.src = url;
+    const file = this.files[0]; if (!file) return;
+    document.getElementById("fileName").textContent = file.name;
+    audio.src = URL.createObjectURL(file);
     audio.load();
 
     if (source) source.disconnect();
-
     source = audioCtx.createMediaElementSource(audio);
-    source.connect(analyser);
+    source.connect(driveNode);
+    driveNode.connect(filterNode);
+    filterNode.connect(panNode);
+    panNode.connect(dryNode);
+    panNode.connect(wetNode);
+    dryNode.connect(analyser);
+    wetNode.connect(analyser);
     analyser.connect(audioCtx.destination);
 });
 
 toggleBtn.addEventListener("click", async () => {
-    await audioCtx.resume();
+    if (audioCtx.state === 'suspended') await audioCtx.resume();
+    
+    const iconEl = toggleBtn.querySelector(".icon");
 
-    if (!isPlaying) {
-        audio.play();
-        isPlaying = true;
-        btnText.textContent = "Stop";
-        toggleBtn.querySelector(".icon").textContent = "⏸";
-    } else {
-        audio.pause();
-        isPlaying = false;
-        btnText.textContent = "Štart";
-        toggleBtn.querySelector(".icon").textContent = "▶";
+    if (!isPlaying) { 
+        audio.play(); 
+        isPlaying = true; 
+        btnText.textContent = "Stop"; 
+        iconEl.textContent = "■";
+    } 
+    else { 
+        audio.pause(); 
+        isPlaying = false; 
+        btnText.textContent = "Štart"; 
+        iconEl.textContent = "▶";
     }
 });
 
+function formatTime(s) { if(isNaN(s)) return "0:00"; let m=Math.floor(s/60), r=Math.floor(s%60); return m+":"+(r<10?"0":"")+r; }
+audio.addEventListener("loadedmetadata", () => { seekBar.max = Math.floor(audio.duration); durationTimeEl.textContent = formatTime(audio.duration); });
+audio.addEventListener("timeupdate", () => { if (!isDraggingSeek) { seekBar.value = Math.floor(audio.currentTime); currentTimeEl.textContent = formatTime(audio.currentTime); } });
+seekBar.addEventListener("input", () => { isDraggingSeek = true; currentTimeEl.textContent = formatTime(seekBar.value); });
+seekBar.addEventListener("change", () => { audio.currentTime = seekBar.value; isDraggingSeek = false; });
+
 function draw() {
     requestAnimationFrame(draw);
-
     analyser.getByteFrequencyData(dataArray);
-
-    ctx.fillStyle = "#05050a";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    const barWidth = (canvas.width / bufferLength) * 2;
-    let x = 0;
-
+    ctx.fillStyle = "#000"; ctx.fillRect(0, 0, canvas.width, canvas.height);
+    const barWidth = (canvas.width / bufferLength) * 2; let x = 0;
     for (let i = 0; i < bufferLength; i++) {
         let barHeight = dataArray[i];
-
-        const r = barHeight + 60;
-        const g = 80;
-        const b = 255;
-
-        ctx.fillStyle = `rgb(${r},${g},${b})`;
-        ctx.fillRect(x, canvas.height - barHeight, barWidth, barHeight);
-
+        ctx.fillStyle = `rgb(${barHeight + 100}, 0, 255)`;
+        ctx.fillRect(x, canvas.height - (barHeight/255)*canvas.height, barWidth, (barHeight/255)*canvas.height);
         x += barWidth + 1;
     }
 }
-
 draw();
 </script>
-
 </body>
 </html>
