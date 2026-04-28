@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio Vizualizér</title>
+    <link rel="icon" href="thumbnail.png" type="image/png">
+
+    <style>
+        body {
+            margin: 0;
+            background: radial-gradient(circle at top, #141428, #05050a);
+            color: white;
+            font-family: "Courier New", monospace;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        h1 {
+            margin-top: 20px;
+            margin-bottom: 50px;
+            font-size: 34px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-shadow: 0 0 15px rgba(76, 111, 255, 0.5);
+        }
+
+        .controls {
+            margin-top: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 22px;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .file-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 16px;
+            border-radius: 14px;
+            background: #1b1b33;
+            box-shadow: 0 0 12px rgba(76, 111, 255, 0.2);
+            cursor: pointer;
+            transition: 0.25s;
+            min-width: 200px;
+            justify-content: center;
+        }
+
+        .file-btn:hover {
+            background: #4c6fff;
+            transform: scale(1.05);
+        }
+
+        canvas {
+            margin-top: 30px;
+            border-radius: 12px;
+            background: black;
+            box-shadow: 0 0 40px rgba(76, 111, 255, 0.35);
+        }
+
+        .player-controls {
+            display: flex;
+            align-items: center;
+            gap: 40px;
+            margin-top: 45px;
+        }
+
+        /* 🎛️ KNOB */
+        .knob-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            position: relative;
+        }
+
+        .knob-labels {
+            width: 100px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            color: #aaa;
+            position: absolute;
+            top: -30px;
+        }
+
+        .knob {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #2a2a4a, #121224);
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.8), 0 0 15px rgba(76, 111, 255, 0.4);
+            position: relative;
+            cursor: grab;
+            transform-origin: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .knob::after {
+            content: "";
+            position: absolute;
+            width: 6px;
+            height: 25px;
+            background: #4c6fff;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 3px;
+        }
+
+        button {
+            width: 220px;
+            height: 70px;
+            border-radius: 35px;
+            border: none;
+            cursor: pointer;
+            background: #1b1b33;
+            color: white;
+            font-size: 26px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            transition: 0.25s;
+            box-shadow: 0 0 18px rgba(76, 111, 255, 0.35);
+        }
+
+        button .icon {
+            font-size: 30px;
+        }
+
+        button:hover {
+            background: #4c6fff;
+            transform: scale(1.05);
+        }
+
+        .back-btn {
+            position: fixed;
+            top: 12px;
+            left: 12px;
+            padding: 14px 18px;
+            border-radius: 14px;
+            background: #1b1b33;
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 600;
+            box-shadow: 0 0 12px rgba(76, 111, 255, 0.3);
+        }
+
+        .back-btn:hover {
+            background: #4c6fff;
+        }
+
+        /* UPDATED INFO BOX in LEFT BOTTOM CORNER, MOVED LOWER */
+        .info-box {
+            position: fixed;
+            left: 20px;
+            bottom: 50px; /* Changed this value to move box down */
+            background-color: #1b1b33;
+            color: white;
+            padding: 25px 20px;
+            border-radius: 20px;
+            box-shadow: 0 0 12px rgba(76, 111, 255, 0.3);
+            width: 250px;
+            text-align: center;
+            font-size: 16px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .info-box h4 {
+            margin: 0 0 10px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .info-box p {
+            margin: 0;
+        }
+
+    </style>
+
+</head>
+<body>
+
+<a href="/" class="back-btn">⟵ Späť na portál</a>
+
+<h1>Audio Vizualizér</h1>
+
+<div class="controls">
+    <label class="file-btn">
+        <span>📁</span>
+        <span id="fileName">Vložiť súbor</span>
+        <input type="file" id="audioFile" accept="audio/*">
+    </label>
+</div>
+
+<canvas id="canvas" width="900" height="400"></canvas>
+
+<div class="player-controls">
+    <div class="knob-container">
+        <div class="knob-labels">
+            <span>MAX</span>
+            <span>MIN</span>
+        </div>
+        <div class="knob" id="knob"></div>
+    </div>
+
+    <button id="toggleBtn">
+        <span class="icon">▶</span>
+        <span id="btnText">Štart</span>
+    </button>
+</div>
+
+<!-- UPDATED INFO BOX DIV -->
+<div class="info-box">
+    <h4>Informácie o prehrávači</h4>
+    <p>Prehrávajte zvuk a ovládajte hlasitosť otočným ovládačom. Použite ovládanie pre spustenie a pauzu.</p>
+</div>
+
+<audio id="audio"></audio>
+
+<script>
+const audio = document.getElementById("audio");
+const fileInput = document.getElementById("audioFile");
+const fileName = document.getElementById("fileName");
+
+const toggleBtn = document.getElementById("toggleBtn");
+const btnText = document.getElementById("btnText");
+
+const knob = document.getElementById("knob");
+
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+
+const AudioContext = window.AudioContext || window.webkitAudioContext;
+const audioCtx = new AudioContext();
+const analyser = audioCtx.createAnalyser();
+
+analyser.fftSize = 256;
+
+const bufferLength = analyser.frequencyBinCount;
+const dataArray = new Uint8Array(bufferLength);
+
+let source;
+let isPlaying = false;
+
+/* 🎛️ KNOB LOGIC */
+let isDragging = false;
+
+let volume = 0.5; // Predvolená hlasitosť
+let angle = 180; // Počiatočný uhol na 45° (MIN)
+
+knob.style.transform = `rotate(${angle}deg)`;
+audio.volume = volume;
+
+knob.addEventListener("mousedown", () => isDragging = true);
+document.addEventListener("mouseup", () => isDragging = false);
+
+document.addEventListener("mousemove", (e) => {
+    if (!isDragging) return;
+
+    const rect = knob.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+
+    const dx = e.clientX - cx;
+    const dy = e.clientY - cy;
+
+    let theta = Math.atan2(dy, dx) * (180 / Math.PI) + 90;
+    if (theta < 0) theta += 360;
+
+    let newVolume = null;
+
+    // Left side: MIN (45°) to MID (0.5)
+    if (theta >= 45 && theta <= 135) {
+        let diff = theta - 45;
+        newVolume = diff / 270 * 0.5;
+    }
+
+    // Right side: MID (0.5) to MAX (315°)
+    if (theta > 135 && theta <= 315) {
+        let diff = theta - 135;
+        newVolume = 0.5 + (diff / 180) * 0.5;
+    }
+
+    if (newVolume !== null) {
+        volume = Math.max(0, Math.min(1, newVolume));
+        angle = theta;
+
+        knob.style.transform = `rotate(${angle}deg)`;
+        audio.volume = volume;
+    }
+});
+
+fileInput.addEventListener("change", function () {
+    const file = this.files[0];
+    if (!file) return;
+
+    fileName.textContent = file.name;
+
+    const url = URL.createObjectURL(file);
+    audio.src = url;
+    audio.load();
+
+    if (source) source.disconnect();
+
+    source = audioCtx.createMediaElementSource(audio);
+    source.connect(analyser);
+    analyser.connect(audioCtx.destination);
+});
+
+toggleBtn.addEventListener("click", async () => {
+    await audioCtx.resume();
+
+    if (!isPlaying) {
+        audio.play();
+        isPlaying = true;
+        btnText.textContent = "Stop";
+        toggleBtn.querySelector(".icon").textContent = "⏸";
+    } else {
+        audio.pause();
+        isPlaying = false;
+        btnText.textContent = "Štart";
+        toggleBtn.querySelector(".icon").textContent = "▶";
+    }
+});
+
+function draw() {
+    requestAnimationFrame(draw);
+
+    analyser.getByteFrequencyData(dataArray);
+
+    ctx.fillStyle = "#05050a";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    const barWidth = (canvas.width / bufferLength) * 2;
+    let x = 0;
+
+    for (let i = 0; i < bufferLength; i++) {
+        let barHeight = dataArray[i];
+
+        const r = barHeight + 60;
+        const g = 80;
+        const b = 255;
+
+        ctx.fillStyle = `rgb(${r},${g},${b})`;
+        ctx.fillRect(x, canvas.height - barHeight, barWidth, barHeight);
+
+        x += barWidth + 1;
+    }
+}
+
+draw();
+</script>
+
+</body>
+</html>
